@@ -1,11 +1,13 @@
-package com.codeoftheweb.salvo.com.codeoftheweb.salvo.models;
+package com.codeoftheweb.salvo.models;
 
 
 import org.hibernate.annotations.GenericGenerator;
 import javax.persistence.*;
 import java.util.Date;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Entity
 public class GamePlayer {
@@ -22,6 +24,9 @@ public class GamePlayer {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "player_id")
     private Player player;
+
+    @OneToMany(mappedBy = "gamePlayer", fetch = FetchType.EAGER)
+    private List<Ship> ships;
 
     private Date joinDate;
 
@@ -64,10 +69,25 @@ public class GamePlayer {
         this.joinDate = joinDate;
     }
 
+    public List<Ship> getShips() {
+        return ships;
+    }
+
+    public Ship addShip(List<String> shipLocations, String shipType) {
+        Ship ship = new Ship(shipLocations, shipType, this);
+        return ship;
+    }
+
     public Map<String, Object> makeGamePlayerDTO() {
         Map<String, Object> map = new LinkedHashMap<>();
         map.put("id", this.getId());
         map.put("player", this.getPlayer().makePlayerDTO());
         return map;
+    }
+
+    public  List<Object> getShipsDTO() {
+        return this.getShips()
+                .stream().map(ship -> ship.makeShipDTO())
+                .collect(Collectors.toList());
     }
 }
