@@ -32,7 +32,7 @@ public class AppController {
     public Map<String, Object> getGame(@PathVariable Long gamePlayerID) {
         GamePlayer gamePlayer = gamePlayerRepository.findById(gamePlayerID).get();
         Map<String, Object> map = gamePlayer.getGame().makeGameDTO();
-        map.put("ships", gamePlayer.getShipsDTO());
+        map.put("ships", gamePlayer.makeShipsDTO());
         return map;
     }
 }

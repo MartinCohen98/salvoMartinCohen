@@ -85,7 +85,7 @@ public class GamePlayer {
         return map;
     }
 
-    public  List<Object> getShipsDTO() {
+    public  List<Object> makeShipsDTO() {
         return this.getShips()
                 .stream().map(ship -> ship.makeShipDTO())
                 .collect(Collectors.toList());
