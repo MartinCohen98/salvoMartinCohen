@@ -22,7 +22,7 @@ public class Ship {
     private GamePlayer gamePlayer;
 
     @ElementCollection
-    @Column(name = "shipLocation")
+    @Column(name = "location")
     private List<String> shipLocations;
 
 
