@@ -3,10 +3,7 @@ package com.codeoftheweb.salvo.models;
 
 import org.hibernate.annotations.GenericGenerator;
 import javax.persistence.*;
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Entity
@@ -26,7 +23,10 @@ public class GamePlayer {
     private Player player;
 
     @OneToMany(mappedBy = "gamePlayer", fetch = FetchType.EAGER)
-    private List<Ship> ships;
+    private Set<Ship> ships;
+
+    @OneToMany(mappedBy = "gamePlayer", fetch = FetchType.EAGER)
+    private Set<Salvo> salvoes;
 
     private Date joinDate;
 
@@ -88,6 +88,10 @@ public class GamePlayer {
     }
 
     public List<Ship> getShips() {
-        return ships;
+        return ships.stream().collect(Collectors.toList());
+    }
+
+    public List<Salvo> getSalvoes() {
+        return salvoes.stream().collect(Collectors.toList());
     }
 }
