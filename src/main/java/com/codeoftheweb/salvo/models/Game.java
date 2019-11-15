@@ -37,6 +37,13 @@ public class Game {
         return map;
     }
 
+    public List<Object> makeSalvoesDTO() {
+        return this.getGamePlayers().stream()
+                .flatMap(gamePlayer -> gamePlayer.getSalvoes()
+                        .stream().map(salvo -> salvo.makeSalvoDTO()))
+                        .collect(Collectors.toList());
+    }
+
     public long getId() {
         return id;
     }

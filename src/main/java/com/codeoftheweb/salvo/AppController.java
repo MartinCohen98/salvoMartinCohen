@@ -33,6 +33,7 @@ public class AppController {
         GamePlayer gamePlayer = gamePlayerRepository.findById(gamePlayerID).get();
         Map<String, Object> map = gamePlayer.getGame().makeGameDTO();
         map.put("ships", gamePlayer.makeShipsDTO());
+        map.put("salvoes", gamePlayer.getGame().makeSalvoesDTO());
         return map;
     }
 }

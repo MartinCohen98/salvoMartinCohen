@@ -65,6 +65,7 @@ public class SalvoApplication {
 
 			List<String> salvoLocations3 = new LinkedList<>();
 			salvoLocations3.add("B2");
+			salvoLocations3.add("H3");
 
             Salvo salvo1 = new Salvo(gamePlayer1, 1, salvoLocations1);
             Salvo salvo2 = new Salvo(gamePlayer1, 2, salvoLocations2);
