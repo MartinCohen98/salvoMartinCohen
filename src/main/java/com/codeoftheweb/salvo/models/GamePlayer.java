@@ -41,6 +41,24 @@ public class GamePlayer {
         joinDate = new Date();
     }
 
+    public Ship addShip(List<String> shipLocations, String shipType) {
+        Ship ship = new Ship(shipLocations, shipType, this);
+        return ship;
+    }
+
+    public Map<String, Object> makeGamePlayerDTO() {
+        Map<String, Object> map = new LinkedHashMap<>();
+        map.put("id", this.getId());
+        map.put("player", this.getPlayer().makePlayerDTO());
+        return map;
+    }
+
+    public  List<Object> makeShipsDTO() {
+        return this.getShips()
+                .stream().map(ship -> ship.makeShipDTO())
+                .collect(Collectors.toList());
+    }
+
     public long getId() {
         return id;
     }
@@ -71,23 +89,5 @@ public class GamePlayer {
 
     public List<Ship> getShips() {
         return ships;
-    }
-
-    public Ship addShip(List<String> shipLocations, String shipType) {
-        Ship ship = new Ship(shipLocations, shipType, this);
-        return ship;
-    }
-
-    public Map<String, Object> makeGamePlayerDTO() {
-        Map<String, Object> map = new LinkedHashMap<>();
-        map.put("id", this.getId());
-        map.put("player", this.getPlayer().makePlayerDTO());
-        return map;
-    }
-
-    public  List<Object> makeShipsDTO() {
-        return this.getShips()
-                .stream().map(ship -> ship.makeShipDTO())
-                .collect(Collectors.toList());
     }
 }

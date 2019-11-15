@@ -28,6 +28,16 @@ public class Game {
         this.creationDate = creationDate;
     }
 
+    public Map<String, Object> makeGameDTO() {
+        Map<String, Object> map = new LinkedHashMap<>();
+        map.put("id", this.getId());
+        map.put("created", this.getCreationDate().getTime());
+        map.put("gamePlayers", this.getGamePlayers()
+                .stream().map(gamePlayer -> gamePlayer.makeGamePlayerDTO())
+                .collect(Collectors.toList()));
+        return map;
+    }
+
     public long getId() {
         return id;
     }
@@ -43,15 +53,5 @@ public class Game {
     @JsonIgnore
     public List<GamePlayer> getGamePlayers() {
         return (gamePlayers.stream().collect(Collectors.toList()));
-    }
-
-    public Map<String, Object> makeGameDTO() {
-        Map<String, Object> map = new LinkedHashMap<>();
-        map.put("id", this.getId());
-        map.put("created", this.getCreationDate().getTime());
-        map.put("gamePlayers", this.getGamePlayers()
-                .stream().map(gamePlayer -> gamePlayer.makeGamePlayerDTO())
-                .collect(Collectors.toList()));
-        return map;
     }
 }

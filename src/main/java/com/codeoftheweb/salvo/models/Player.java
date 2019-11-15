@@ -30,8 +30,11 @@ public class Player {
         this.userName = userName;
     }
 
-    public long getId() {
-        return id;
+    public Map<String, Object> makePlayerDTO() {
+        Map<String, Object> map = new LinkedHashMap<>();
+        map.put("id", this.getId());
+        map.put("email", this.getUserName());
+        return map;
     }
 
     public String getUserName() {
@@ -46,10 +49,7 @@ public class Player {
         return (gamePlayers.stream().map(gamePlayer -> gamePlayer.getGame()).collect(Collectors.toList()));
     }
 
-    public Map<String, Object> makePlayerDTO() {
-        Map<String, Object> map = new LinkedHashMap<>();
-        map.put("id", this.getId());
-        map.put("email", this.getUserName());
-        return map;
+    public long getId() {
+        return id;
     }
 }
