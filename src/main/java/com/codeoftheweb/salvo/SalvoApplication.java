@@ -31,6 +31,7 @@ public class SalvoApplication {
 
 			Player player1 = new Player("jackbauer@gmail.com");
 			Player player2 = new Player("michelledessler@gmail.com");
+			Player player3 = new Player("davidpalmer@hotmail.com");
 
 			Date date = new Date();
 
@@ -60,21 +61,30 @@ public class SalvoApplication {
 			Ship ship2 = gamePlayer1.addShip(shipLocations2, "Destroyer");
 			Ship ship3 = gamePlayer2.addShip(shipLocations3, "Patrol Boat");
 
-			playerRepository.save(player1);
-			playerRepository.save(player2);
-			playerRepository.save(new Player("davidpalmer@hotmail.com"));
+			List<Player> playerList = new LinkedList<>();
+			playerList.add(player1);
+			playerList.add(player2);
+			playerList.add(player3);
 
-			gameRepository.save(game1);
-			gameRepository.save(game2);
-			gameRepository.save(game3);
+			List<Game> gameList = new LinkedList<>();
+			gameList.add(game1);
+			gameList.add(game2);
+			gameList.add(game3);
 
-			gamePlayerRepository.save(gamePlayer1);
-			gamePlayerRepository.save(gamePlayer2);
-			gamePlayerRepository.save(gamePlayer3);
+			List<GamePlayer> gamePlayerList = new LinkedList<>();
+			gamePlayerList.add(gamePlayer1);
+			gamePlayerList.add(gamePlayer2);
+			gamePlayerList.add(gamePlayer3);
 
-			shipRepository.save(ship1);
-			shipRepository.save(ship2);
-			shipRepository.save(ship3);
+			List<Ship> shipList = new LinkedList<>();
+			shipList.add(ship1);
+			shipList.add(ship2);
+			shipList.add(ship3);
+
+			playerRepository.saveAll(playerList);
+			gameRepository.saveAll(gameList);
+			gamePlayerRepository.saveAll(gamePlayerList);
+			shipRepository.saveAll(shipList);
 		});
 	}
 }
