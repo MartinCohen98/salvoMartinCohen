@@ -1,6 +1,5 @@
 package com.codeoftheweb.salvo.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
@@ -50,7 +49,6 @@ public class Game {
         this.creationDate = creationDate;
     }
 
-    @JsonIgnore
     public List<GamePlayer> getGamePlayers() {
         return (gamePlayers.stream().collect(Collectors.toList()));
     }
