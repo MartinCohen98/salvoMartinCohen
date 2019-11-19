@@ -41,15 +41,15 @@ public class GamePlayer {
         joinDate = new Date();
     }
 
-    public Ship addShip(List<String> shipLocations, String shipType) {
-        Ship ship = new Ship(shipLocations, shipType, this);
-        return ship;
-    }
-
     public Map<String, Object> makeGamePlayerDTO() {
         Map<String, Object> map = new LinkedHashMap<>();
         map.put("id", this.getId());
         map.put("player", this.getPlayer().makePlayerDTO());
+        if (this.getScore() == null) {
+            map.put("score", null);
+        } else {
+            map.put("score", this.getScore().getScore());
+        };
         return map;
     }
 
@@ -57,6 +57,10 @@ public class GamePlayer {
         return this.getShips()
                 .stream().map(ship -> ship.makeShipDTO())
                 .collect(Collectors.toList());
+    }
+
+    public Score getScore() {
+        return player.getScore(game);
     }
 
     public long getId() {

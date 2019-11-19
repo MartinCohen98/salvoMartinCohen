@@ -21,6 +21,9 @@ public class Player {
     @OneToMany(mappedBy = "player", fetch = FetchType.EAGER)
     private Set<GamePlayer> gamePlayers;
 
+    @OneToMany(mappedBy = "player", fetch = FetchType.EAGER)
+    private Set<Score> scores;
+
     private String userName;
 
 
@@ -37,6 +40,12 @@ public class Player {
         return map;
     }
 
+    public Score getScore(Game game) {
+        return scores.stream()
+                .filter(score -> score.getGame().getId() == game.getId())
+                .findFirst().orElse(null);
+    }
+
     public String getUserName() {
         return userName;
     }
@@ -51,5 +60,9 @@ public class Player {
 
     public long getId() {
         return id;
+    }
+
+    public Set<Score> getScores() {
+        return scores;
     }
 }
