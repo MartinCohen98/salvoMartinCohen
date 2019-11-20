@@ -46,6 +46,37 @@ public class Player {
                 .findFirst().orElse(null);
     }
 
+    public Map<String, Object> getLeaderboardDTO() {
+        Map<String, Object> map = new LinkedHashMap<>();
+        map.put("id", this.getId());
+        map.put("email", this.getUserName());
+        map.put("score", this.getTotalScore());
+        map.put("wins", this.getWins());
+        map.put("losses", this.getLosses());
+        map.put("ties", this.getTies());
+        return map;
+    }
+
+    private long getWins() {
+        return countScoresWithNumber(1);
+    }
+
+    private long getLosses() {
+        return countScoresWithNumber(0);
+    }
+
+    private long getTies() {
+        return countScoresWithNumber(0.5);
+    }
+
+    private long countScoresWithNumber(double number) {
+        return scores.stream().filter(score -> score.getScore() == number).count();
+    }
+
+    public double getTotalScore() {
+        return scores.stream().mapToDouble(Score::getScore).sum();
+    }
+
     public String getUserName() {
         return userName;
     }

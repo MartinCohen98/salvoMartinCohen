@@ -33,9 +33,12 @@ public class Game {
     public Map<String, Object> makeGameDTO() {
         Map<String, Object> map = new LinkedHashMap<>();
         map.put("id", this.getId());
-        map.put("created", this.getCreationDate());
+        map.put("created", this.getCreationDate().getTime());
         map.put("gamePlayers", this.getGamePlayers()
                 .stream().map(gamePlayer -> gamePlayer.makeGamePlayerDTO())
+                .collect(Collectors.toList()));
+        map.put("scores", this.getScores()
+                .stream().map(score -> score.makeScoreDTO())
                 .collect(Collectors.toList()));
         return map;
     }
