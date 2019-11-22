@@ -1,18 +1,18 @@
 package com.codeoftheweb.salvo;
 
 import com.codeoftheweb.salvo.models.GamePlayer;
+import com.codeoftheweb.salvo.models.Player;
 import com.codeoftheweb.salvo.repositories.GamePlayerRepository;
 import com.codeoftheweb.salvo.repositories.GameRepository;
 import com.codeoftheweb.salvo.repositories.PlayerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -28,11 +28,21 @@ public class AppController {
     @Autowired
     private PlayerRepository playerRepository;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @RequestMapping("/games")
-    public List<Object> getGameAll() {
-        return gameRepository.findAll()
+    public Object getGameAll(Authentication authentication) {
+        Map<String, Object> map = new LinkedHashMap<>();
+        List<Object> list = gameRepository.findAll()
                 .stream().map(game -> game.makeGameDTO())
                 .collect(Collectors.toList());
+        if (!Objects.isNull(authentication)) {
+            map.put("player", this.getPlayerFromAuthentication(authentication).makePlayerDTO());
+            map.put("games", list);
+            return map;
+        }
+        return list;
     }
 
     @RequestMapping("/game_view/{gamePlayerID}")
@@ -54,5 +64,25 @@ public class AppController {
         list.sort(byScore);
         Collections.reverse(list);
         return list;
+    }
+
+    @RequestMapping(path = "/players", method = RequestMethod.POST)
+    public ResponseEntity<Object> register(
+            @RequestParam String username, @RequestParam String password) {
+
+        if (username.isEmpty() || password.isEmpty()) {
+            return new ResponseEntity<>("Missing data", HttpStatus.FORBIDDEN);
+        }
+
+        if (playerRepository.findByUserName(username) !=  null) {
+            return new ResponseEntity<>("Username already in use", HttpStatus.FORBIDDEN);
+        }
+
+        playerRepository.save(new Player(username, passwordEncoder.encode(password)));
+        return new ResponseEntity<>(HttpStatus.CREATED);
+    }
+
+    private Player getPlayerFromAuthentication(Authentication authentication) {
+        return (playerRepository.findByUserName(authentication.getName()));
     }
 }

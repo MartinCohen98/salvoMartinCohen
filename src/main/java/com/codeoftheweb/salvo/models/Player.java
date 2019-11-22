@@ -26,11 +26,14 @@ public class Player {
 
     private String userName;
 
+    private String password;
+
 
     public Player() {}
 
-    public Player(String userName) {
+    public Player(String userName, String password) {
         this.userName = userName;
+        this.password = password;
     }
 
     public Map<String, Object> makePlayerDTO() {
@@ -95,5 +98,9 @@ public class Player {
 
     public Set<Score> getScores() {
         return scores;
+    }
+
+    public String getPassword() {
+        return password;
     }
 }
