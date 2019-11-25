@@ -8,6 +8,7 @@ import com.codeoftheweb.salvo.repositories.PlayerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
@@ -32,17 +33,18 @@ public class AppController {
     private PasswordEncoder passwordEncoder;
 
     @RequestMapping("/games")
-    public Object getGameAll(Authentication authentication) {
+    public Map<String, Object> getGameAll(Authentication authentication) {
         Map<String, Object> map = new LinkedHashMap<>();
         List<Object> list = gameRepository.findAll()
                 .stream().map(game -> game.makeGameDTO())
                 .collect(Collectors.toList());
-        if (!Objects.isNull(authentication)) {
+        if (!this.isGuest(authentication)) {
             map.put("player", this.getPlayerFromAuthentication(authentication).makePlayerDTO());
-            map.put("games", list);
-            return map;
+        } else {
+            map.put("player", "Guest");
         }
-        return list;
+        map.put("games", list);
+        return map;
     }
 
     @RequestMapping("/game_view/{gamePlayerID}")
@@ -68,21 +70,25 @@ public class AppController {
 
     @RequestMapping(path = "/players", method = RequestMethod.POST)
     public ResponseEntity<Object> register(
-            @RequestParam String username, @RequestParam String password) {
+            @RequestParam String email, @RequestParam String password) {
 
-        if (username.isEmpty() || password.isEmpty()) {
+        if (email.isEmpty() || password.isEmpty()) {
             return new ResponseEntity<>("Missing data", HttpStatus.FORBIDDEN);
         }
 
-        if (playerRepository.findByUserName(username) !=  null) {
+        if (playerRepository.findByUserName(email) !=  null) {
             return new ResponseEntity<>("Username already in use", HttpStatus.FORBIDDEN);
         }
 
-        playerRepository.save(new Player(username, passwordEncoder.encode(password)));
+        playerRepository.save(new Player(email, passwordEncoder.encode(password)));
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     private Player getPlayerFromAuthentication(Authentication authentication) {
         return (playerRepository.findByUserName(authentication.getName()));
+    }
+
+    private boolean isGuest(Authentication authentication) {
+        return authentication == null || authentication instanceof AnonymousAuthenticationToken;
     }
 }
