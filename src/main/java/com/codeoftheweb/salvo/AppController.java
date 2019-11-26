@@ -3,9 +3,11 @@ package com.codeoftheweb.salvo;
 import com.codeoftheweb.salvo.models.Game;
 import com.codeoftheweb.salvo.models.GamePlayer;
 import com.codeoftheweb.salvo.models.Player;
+import com.codeoftheweb.salvo.models.Ship;
 import com.codeoftheweb.salvo.repositories.GamePlayerRepository;
 import com.codeoftheweb.salvo.repositories.GameRepository;
 import com.codeoftheweb.salvo.repositories.PlayerRepository;
+import com.codeoftheweb.salvo.repositories.ShipRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,6 +31,9 @@ public class AppController {
 
     @Autowired
     private PlayerRepository playerRepository;
+
+    @Autowired
+    private ShipRepository shipRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -67,9 +72,18 @@ public class AppController {
         if (gamePlayer.getPlayer().getId() != getPlayerFromAuthentication(authentication).getId())
             return new ResponseEntity<>(makeMap("Error", "User ID does not match link ID"), HttpStatus.UNAUTHORIZED);
         Map<String, Object> map = gamePlayer.getGame().makeGameDTO();
+        map.put("gameState", "PLACESHIPS");
         map.put("ships", gamePlayer.makeShipsDTO());
         map.put("salvoes", gamePlayer.getGame().makeSalvoesDTO());
+        map.put("hits", this.makeHitsDTO());
         return new ResponseEntity<>(map, HttpStatus.OK);
+    }
+
+    private Map<String, Object> makeHitsDTO() {
+        Map<String, Object> map = new LinkedHashMap<>();
+        map.put("self", new LinkedList<>());
+        map.put("opponent", new LinkedList<>());
+        return map;
     }
 
     @RequestMapping("leaderboard")
@@ -114,6 +128,26 @@ public class AppController {
         GamePlayer gamePlayer = new GamePlayer(game, this.getPlayerFromAuthentication(authentication));
         gamePlayerRepository.save(gamePlayer);
         return new ResponseEntity<>(makeMap("gpid", gamePlayer.getId()), HttpStatus.CREATED);
+    }
+
+    @RequestMapping(path = "/games/players/{gamePlayerID}/ships", method = RequestMethod.POST)
+    public ResponseEntity<Map<String, Object>> addShip(@PathVariable Long gamePlayerID, @RequestBody List<Ship> ships,
+                                                        Authentication authentication) {
+        if (this.isGuest(authentication))
+            return new ResponseEntity<>(makeMap("Error", "User not logged in"), HttpStatus.UNAUTHORIZED);
+        GamePlayer gamePlayer = gamePlayerRepository.findById(gamePlayerID).get();
+        if (Objects.isNull(gamePlayer)) {
+            return new ResponseEntity<>(makeMap("Error", "GamePlayer does not exist"), HttpStatus.UNAUTHORIZED);
+        }
+        if (gamePlayer.getPlayer().getId() != this.getPlayerFromAuthentication(authentication).getId()) {
+            return new ResponseEntity<>(makeMap("Error", "Player ID does not match link ID"), HttpStatus.UNAUTHORIZED);
+        }
+        if (!gamePlayer.getShips().isEmpty()) {
+            return new ResponseEntity<>(makeMap("Error", "GamePlayer already has ships"), HttpStatus.FORBIDDEN);
+        }
+        ships.stream().forEach(ship -> ship.setGamePlayer(gamePlayer));
+        shipRepository.saveAll(ships);
+        return new ResponseEntity<>(makeMap("Success", "Ships placed"), HttpStatus.CREATED);
     }
 
     private Player getPlayerFromAuthentication(Authentication authentication) {
