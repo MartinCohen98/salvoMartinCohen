@@ -1,5 +1,6 @@
 package com.codeoftheweb.salvo;
 
+import com.codeoftheweb.salvo.models.Game;
 import com.codeoftheweb.salvo.models.GamePlayer;
 import com.codeoftheweb.salvo.models.Player;
 import com.codeoftheweb.salvo.repositories.GamePlayerRepository;
@@ -47,13 +48,28 @@ public class AppController {
         return map;
     }
 
+    @RequestMapping(path = "/games", method = RequestMethod.POST)
+    public ResponseEntity<Map<String, Object>> createGame(Authentication authentication) {
+        if (this.isGuest(authentication))
+            return new ResponseEntity<>(makeMap("Error", "User not logged in"), HttpStatus.UNAUTHORIZED);
+        Game game = new Game();
+        GamePlayer gamePlayer = new GamePlayer(game, this.getPlayerFromAuthentication(authentication));
+        gameRepository.save(game);
+        gamePlayerRepository.save(gamePlayer);
+        return new ResponseEntity<>(makeMap("gpid", gamePlayer.getId()), HttpStatus.CREATED);
+    }
+
     @RequestMapping("/game_view/{gamePlayerID}")
-    public Map<String, Object> getGame(@PathVariable Long gamePlayerID) {
+    public ResponseEntity<Map<String, Object>> getGame(@PathVariable Long gamePlayerID, Authentication authentication) {
         GamePlayer gamePlayer = gamePlayerRepository.findById(gamePlayerID).get();
+        if (this.isGuest(authentication))
+            return new ResponseEntity<>(makeMap("Error", "User not logged in"), HttpStatus.UNAUTHORIZED);
+        if (gamePlayer.getPlayer().getId() != getPlayerFromAuthentication(authentication).getId())
+            return new ResponseEntity<>(makeMap("Error", "User ID does not match link ID"), HttpStatus.UNAUTHORIZED);
         Map<String, Object> map = gamePlayer.getGame().makeGameDTO();
         map.put("ships", gamePlayer.makeShipsDTO());
         map.put("salvoes", gamePlayer.getGame().makeSalvoesDTO());
-        return map;
+        return new ResponseEntity<>(map, HttpStatus.OK);
     }
 
     @RequestMapping("leaderboard")
@@ -84,11 +100,33 @@ public class AppController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
+    @RequestMapping(path = "/game/{gameID}/players", method = RequestMethod.POST)
+    public ResponseEntity<Map<String, Object>> joinGame(@PathVariable Long gameID, Authentication authentication) {
+        if (this.isGuest(authentication))
+            return new ResponseEntity<>(makeMap("Error", "User not logged in"), HttpStatus.UNAUTHORIZED);
+        Game game = gameRepository.findById(gameID).get();
+        if (Objects.isNull(game)) {
+            return new ResponseEntity<>(makeMap("Error", "Game does not exist"), HttpStatus.FORBIDDEN);
+        }
+        if (game.getGamePlayers().size() != 1) {
+            return new ResponseEntity<>(makeMap("Error", "Game is not joinable"), HttpStatus.FORBIDDEN);
+        }
+        GamePlayer gamePlayer = new GamePlayer(game, this.getPlayerFromAuthentication(authentication));
+        gamePlayerRepository.save(gamePlayer);
+        return new ResponseEntity<>(makeMap("gpid", gamePlayer.getId()), HttpStatus.CREATED);
+    }
+
     private Player getPlayerFromAuthentication(Authentication authentication) {
         return (playerRepository.findByUserName(authentication.getName()));
     }
 
     private boolean isGuest(Authentication authentication) {
         return authentication == null || authentication instanceof AnonymousAuthenticationToken;
+    }
+
+    private Map<String, Object> makeMap(String string, Object object) {
+        Map<String, Object> map = new LinkedHashMap<>();
+        map.put(string, object);
+        return map;
     }
 }
