@@ -69,7 +69,7 @@ public class AppController {
         if (gamePlayer.getPlayer().getId() != getPlayerFromAuthentication(authentication).getId())
             return new ResponseEntity<>(makeMap("Error", "User ID does not match link ID"), HttpStatus.UNAUTHORIZED);
         Map<String, Object> map = gamePlayer.getGame().makeGameDTO();
-        map.put("gameState", "PLACESHIPS");
+        map.put("gameState", this.getState(gamePlayer, gamePlayer.getOpponent()));
         map.put("ships", gamePlayer.makeShipsDTO());
         map.put("salvoes", gamePlayer.getGame().makeSalvoesDTO());
         map.put("hits", this.makeHitsDTO());
@@ -147,7 +147,7 @@ public class AppController {
         return new ResponseEntity<>(makeMap("Success", "Ships placed"), HttpStatus.CREATED);
     }
 
-    @RequestMapping(path = "/games/players/{gamePlayerID}/salvos", method = RequestMethod.POST)
+    @RequestMapping(path = "/games/players/{gamePlayerID}/salvoes", method = RequestMethod.POST)
     public ResponseEntity<Map<String, Object>> addSalvo(@PathVariable Long gamePlayerID, @RequestBody Salvo salvo,
                                                         Authentication authentication) {
         if (this.isGuest(authentication))
@@ -179,5 +179,17 @@ public class AppController {
         Map<String, Object> map = new LinkedHashMap<>();
         map.put(string, object);
         return map;
+    }
+
+    private String getState(GamePlayer gamePlayer, GamePlayer opponent) {
+        if (gamePlayer.getShips().isEmpty())
+            return "PLACESHIPS";
+        if (gamePlayer.getGame().getGamePlayers().size() == 1)
+            return "WAITINGFOROPP";
+        if (gamePlayer.getId() < opponent.getId())
+            return "PLAY";
+        if (gamePlayer.getId() > opponent.getId())
+            return "WAIT";
+        return "WAIT";
     }
 }

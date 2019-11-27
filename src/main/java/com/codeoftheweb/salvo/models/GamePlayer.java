@@ -58,6 +58,12 @@ public class GamePlayer {
         return salvoes.stream().anyMatch(salvo -> salvo.getTurn() == turn);
     }
 
+    public GamePlayer getOpponent() {
+        return this.getGame().getGamePlayers().stream()
+                .filter(gamePlayer -> gamePlayer.getId() != this.getId())
+                .findFirst().orElse(new GamePlayer());
+    }
+
     public Score getScore() {
         return player.getScore(game);
     }
