@@ -1,13 +1,7 @@
 package com.codeoftheweb.salvo;
 
-import com.codeoftheweb.salvo.models.Game;
-import com.codeoftheweb.salvo.models.GamePlayer;
-import com.codeoftheweb.salvo.models.Player;
-import com.codeoftheweb.salvo.models.Ship;
-import com.codeoftheweb.salvo.repositories.GamePlayerRepository;
-import com.codeoftheweb.salvo.repositories.GameRepository;
-import com.codeoftheweb.salvo.repositories.PlayerRepository;
-import com.codeoftheweb.salvo.repositories.ShipRepository;
+import com.codeoftheweb.salvo.models.*;
+import com.codeoftheweb.salvo.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,6 +28,9 @@ public class AppController {
 
     @Autowired
     private ShipRepository shipRepository;
+
+    @Autowired
+    private SalvoRepository salvoRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -148,6 +145,26 @@ public class AppController {
         ships.stream().forEach(ship -> ship.setGamePlayer(gamePlayer));
         shipRepository.saveAll(ships);
         return new ResponseEntity<>(makeMap("Success", "Ships placed"), HttpStatus.CREATED);
+    }
+
+    @RequestMapping(path = "/games/players/{gamePlayerID}/salvos", method = RequestMethod.POST)
+    public ResponseEntity<Map<String, Object>> addSalvo(@PathVariable Long gamePlayerID, @RequestBody Salvo salvo,
+                                                        Authentication authentication) {
+        if (this.isGuest(authentication))
+            return new ResponseEntity<>(makeMap("Error", "User not logged in"), HttpStatus.UNAUTHORIZED);
+        GamePlayer gamePlayer = gamePlayerRepository.findById(gamePlayerID).get();
+        if (Objects.isNull(gamePlayer)) {
+            return new ResponseEntity<>(makeMap("Error", "GamePlayer does not exist"), HttpStatus.UNAUTHORIZED);
+        }
+        if (gamePlayer.getPlayer().getId() != this.getPlayerFromAuthentication(authentication).getId()) {
+            return new ResponseEntity<>(makeMap("Error", "Player ID does not match link ID"), HttpStatus.UNAUTHORIZED);
+        }
+        if (gamePlayer.salvoExistForTurn(salvo.getTurn())) {
+            return new ResponseEntity<>(makeMap("Error", "Salvo already submitted for this turn"), HttpStatus.FORBIDDEN);
+        }
+        salvo.setGamePlayer(gamePlayer);
+        salvoRepository.save(salvo);
+        return new ResponseEntity<>(makeMap("Success", "Salvoes thrown"), HttpStatus.CREATED);
     }
 
     private Player getPlayerFromAuthentication(Authentication authentication) {

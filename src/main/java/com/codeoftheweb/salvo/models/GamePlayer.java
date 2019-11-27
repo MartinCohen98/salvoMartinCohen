@@ -54,6 +54,10 @@ public class GamePlayer {
                 .collect(Collectors.toList());
     }
 
+    public boolean salvoExistForTurn(int turn) {
+        return salvoes.stream().anyMatch(salvo -> salvo.getTurn() == turn);
+    }
+
     public Score getScore() {
         return player.getScore(game);
     }
