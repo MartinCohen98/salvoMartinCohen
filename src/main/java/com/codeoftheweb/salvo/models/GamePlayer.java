@@ -48,6 +48,48 @@ public class GamePlayer {
         return map;
     }
 
+    public List<Object> makeHitsDTO(List<Salvo> opponentSalvoes) {
+        if (this.getId() != 0)
+            return opponentSalvoes.stream()
+                .map(salvo -> this.makeHitDTO(salvo, opponentSalvoes))
+                .collect(Collectors.toList());
+        else
+            return new LinkedList<>();
+    }
+
+    private Map<String, Object> makeHitDTO(Salvo salvo, List<Salvo> opponenSalvoes) {
+        Map<String, Object> map = new LinkedHashMap<>();
+        List<String> hitLocations = salvo.getHitLocations(this.getShips());
+        map.put("turn", salvo.getTurn());
+        map.put("hitLocations", hitLocations);
+        map.put("damages", this.getDamagesDTO(opponenSalvoes, salvo));
+        map.put("missed", salvo.getSalvoLocations().size() - hitLocations.size());
+        return map;
+    }
+
+    private Map<String, Object> getDamagesDTO(List<Salvo> opponentSalvoes, Salvo salvo) {
+        Map<String, Object> map = new LinkedHashMap<>();
+        map.put("carrierHits", salvo.getHitsOnShipType(this.getShips(), "carrier"));
+        map.put("battleshipHits", salvo.getHitsOnShipType(this.getShips(), "battleship"));
+        map.put("submarineHits", salvo.getHitsOnShipType(this.getShips(), "submarine"));
+        map.put("destroyerHits", salvo.getHitsOnShipType(this.getShips(), "destroyer"));
+        map.put("patrolboatHits", salvo.getHitsOnShipType(this.getShips(), "patrolboat"));
+        map.put("carrier", this.getHitsBeforeTurnForType(opponentSalvoes, "carrier", salvo.getTurn()));
+        map.put("battleship", this.getHitsBeforeTurnForType(opponentSalvoes, "battleship", salvo.getTurn()));
+        map.put("submarine", this.getHitsBeforeTurnForType(opponentSalvoes, "submarine", salvo.getTurn()));
+        map.put("destroyer", this.getHitsBeforeTurnForType(opponentSalvoes, "destroyer", salvo.getTurn()));
+        map.put("patrolboat", this.getHitsBeforeTurnForType(opponentSalvoes, "patrolboat", salvo.getTurn()));
+        return map;
+    }
+
+    private long getHitsBeforeTurnForType(List<Salvo> opponentSalvoes, String type, int turn) {
+        Ship ship = ships.stream().filter(ship1 -> ship1.getType() == type).findFirst().orElse(new Ship());
+        List<Salvo> salvosToCount = opponentSalvoes.stream()
+                .filter(salvo -> salvo.getTurn() <= turn)
+                .collect(Collectors.toList());
+        return salvosToCount.stream().mapToLong(salvo -> salvo.getHitsOnShip(ship)).sum();
+    }
+
     public  List<Object> makeShipsDTO() {
         return this.getShips()
                 .stream().map(ship -> ship.makeShipDTO())
@@ -56,6 +98,10 @@ public class GamePlayer {
 
     public boolean salvoExistForTurn(int turn) {
         return salvoes.stream().anyMatch(salvo -> salvo.getTurn() == turn);
+    }
+
+    public int getNextTurn() {
+        return (salvoes.size() + 1);
     }
 
     public GamePlayer getOpponent() {
@@ -97,10 +143,16 @@ public class GamePlayer {
     }
 
     public List<Ship> getShips() {
-        return ships.stream().collect(Collectors.toList());
+        if (!Objects.isNull(ships))
+            return ships.stream().collect(Collectors.toList());
+        else
+            return new LinkedList<>();
     }
 
     public List<Salvo> getSalvoes() {
-        return salvoes.stream().collect(Collectors.toList());
+        if (!Objects.isNull(salvoes))
+            return salvoes.stream().collect(Collectors.toList());
+        else
+            return new LinkedList<>();
     }
 }

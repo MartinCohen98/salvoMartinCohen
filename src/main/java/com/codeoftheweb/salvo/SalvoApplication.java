@@ -89,31 +89,31 @@ public class SalvoApplication extends SpringBootServletInitializer {
 			List<String> shipLocations7 = Arrays.asList("A2", "A3", "A4");
 			List<String> shipLocations8 = Arrays.asList("G6", "H6");
 
-			Ship ship1 = new Ship(shipLocations1, "Destroyer", gamePlayer1);
-			Ship ship2 = new Ship(shipLocations2, "Submarine", gamePlayer1);
-			Ship ship3 = new Ship(shipLocations3, "Patrol Boat", gamePlayer1);
-			Ship ship4 = new Ship(shipLocations4, "Destroyer", gamePlayer2);
-			Ship ship5 = new Ship(shipLocations5, "Patrol Boat", gamePlayer2);
-			Ship ship6 = new Ship(shipLocations4, "Destroyer", gamePlayer3);
-			Ship ship7 = new Ship(shipLocations6, "Patrol Boat", gamePlayer3);
-			Ship ship8 = new Ship(shipLocations7, "Submarine", gamePlayer4);
-			Ship ship9 = new Ship(shipLocations8, "Patrol Boat", gamePlayer4);
-			Ship ship10 = new Ship(shipLocations4, "Destroyer", gamePlayer5);
-			Ship ship11 = new Ship(shipLocations6, "Patrol Boat", gamePlayer5);
-			Ship ship12 = new Ship(shipLocations7, "Submarine", gamePlayer6);
-			Ship ship13 = new Ship(shipLocations8, "Patrol Boat", gamePlayer6);
-			Ship ship14 = new Ship(shipLocations4, "Destroyer", gamePlayer7);
-			Ship ship15 = new Ship(shipLocations6, "Patrol Boat", gamePlayer7);
-			Ship ship16 = new Ship(shipLocations7, "Submarine", gamePlayer8);
-			Ship ship17 = new Ship(shipLocations8, "Patrol Boat", gamePlayer8);
-			Ship ship18 = new Ship(shipLocations4, "Destroyer", gamePlayer9);
-			Ship ship19 = new Ship(shipLocations6, "Patrol Boat", gamePlayer9);
-			Ship ship20 = new Ship(shipLocations7, "Submarine", gamePlayer10);
-			Ship ship21 = new Ship(shipLocations8, "Patrol Boat", gamePlayer10);
-			Ship ship22 = new Ship(shipLocations4, "Destroyer", gamePlayer11);
-			Ship ship23 = new Ship(shipLocations6, "Patrol Boat", gamePlayer11);
-			Ship ship24 = new Ship(shipLocations7, "Submarine", gamePlayer13);
-			Ship ship25 = new Ship(shipLocations8, "Patrol Boat", gamePlayer13);
+			Ship ship1 = new Ship(shipLocations1, "destroyer", gamePlayer1);
+			Ship ship2 = new Ship(shipLocations2, "submarine", gamePlayer1);
+			Ship ship3 = new Ship(shipLocations3, "patrolboat", gamePlayer1);
+			Ship ship4 = new Ship(shipLocations4, "destroyer", gamePlayer2);
+			Ship ship5 = new Ship(shipLocations5, "patrolboat", gamePlayer2);
+			Ship ship6 = new Ship(shipLocations4, "destroyer", gamePlayer3);
+			Ship ship7 = new Ship(shipLocations6, "patrolboat", gamePlayer3);
+			Ship ship8 = new Ship(shipLocations7, "submarine", gamePlayer4);
+			Ship ship9 = new Ship(shipLocations8, "patrolboat", gamePlayer4);
+			Ship ship10 = new Ship(shipLocations4, "destroyer", gamePlayer5);
+			Ship ship11 = new Ship(shipLocations6, "patrolboat", gamePlayer5);
+			Ship ship12 = new Ship(shipLocations7, "submarine", gamePlayer6);
+			Ship ship13 = new Ship(shipLocations8, "patrolboat", gamePlayer6);
+			Ship ship14 = new Ship(shipLocations4, "destroyer", gamePlayer7);
+			Ship ship15 = new Ship(shipLocations6, "patrolboat", gamePlayer7);
+			Ship ship16 = new Ship(shipLocations7, "submarine", gamePlayer8);
+			Ship ship17 = new Ship(shipLocations8, "patrolboat", gamePlayer8);
+			Ship ship18 = new Ship(shipLocations4, "destroyer", gamePlayer9);
+			Ship ship19 = new Ship(shipLocations6, "patrolboat", gamePlayer9);
+			Ship ship20 = new Ship(shipLocations7, "submarine", gamePlayer10);
+			Ship ship21 = new Ship(shipLocations8, "patrolboat", gamePlayer10);
+			Ship ship22 = new Ship(shipLocations4, "destroyer", gamePlayer11);
+			Ship ship23 = new Ship(shipLocations6, "patrolboat", gamePlayer11);
+			Ship ship24 = new Ship(shipLocations7, "submarine", gamePlayer13);
+			Ship ship25 = new Ship(shipLocations8, "patrolboat", gamePlayer13);
 
 
             Salvo salvo1 = new Salvo(gamePlayer1, 1, Arrays.asList("B5", "C5", "F1"));
@@ -196,6 +196,8 @@ class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 				.antMatchers("/web/**").permitAll()
 				.antMatchers("/api/**").permitAll()
 				.anyRequest().permitAll();
+
+		http.headers().frameOptions().disable();
 
 		http.formLogin()
 				.usernameParameter("name")
