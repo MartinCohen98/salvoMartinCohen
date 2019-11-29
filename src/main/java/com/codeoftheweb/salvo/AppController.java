@@ -161,6 +161,9 @@ public class AppController {
         if (gamePlayer.salvoExistForTurn(salvo.getTurn())) {
             return new ResponseEntity<>(makeMap("error", "Salvo already submitted for this turn"), HttpStatus.FORBIDDEN);
         }
+        if (salvo.getSalvoLocations().size() != 5) {
+            return new ResponseEntity<>(makeMap("error", "Salvo should fire 5 times"), HttpStatus.FORBIDDEN);
+        }
         salvo.setGamePlayer(gamePlayer);
         salvo.setTurn(gamePlayer.getNextTurn());
         salvoRepository.save(salvo);
