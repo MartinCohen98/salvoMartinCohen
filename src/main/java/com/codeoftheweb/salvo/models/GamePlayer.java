@@ -83,7 +83,7 @@ public class GamePlayer {
     }
 
     private long getHitsBeforeTurnForType(List<Salvo> opponentSalvoes, String type, int turn) {
-        Ship ship = ships.stream().filter(ship1 -> ship1.getType() == type).findFirst().orElse(new Ship());
+        Ship ship = ships.stream().filter(ship1 -> ship1.getType().equals(type)).findFirst().orElse(new Ship());
         List<Salvo> salvosToCount = opponentSalvoes.stream()
                 .filter(salvo -> salvo.getTurn() <= turn)
                 .collect(Collectors.toList());

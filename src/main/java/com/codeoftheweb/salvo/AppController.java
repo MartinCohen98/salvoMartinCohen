@@ -172,7 +172,7 @@ public class AppController {
     }
 
     private boolean isGuest(Authentication authentication) {
-        return authentication == null || authentication instanceof AnonymousAuthenticationToken;
+        return Objects.isNull(authentication) || authentication instanceof AnonymousAuthenticationToken;
     }
 
     private Map<String, Object> makeMap(String string, Object object) {

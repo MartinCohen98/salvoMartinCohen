@@ -89,7 +89,7 @@ public class Salvo {
     }
 
     public long getHitsOnShipType(List<Ship> ships, String type) {
-        Ship ship = ships.stream().filter(ship1 -> ship1.getType() == type).findFirst().orElse(new Ship());
+        Ship ship = ships.stream().filter(ship1 -> ship1.getType().equals(type)).findFirst().orElse(new Ship());
         return this.getHitsOnShip(ship);
     }
 }
