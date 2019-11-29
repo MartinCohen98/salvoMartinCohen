@@ -40,6 +40,11 @@ public class Salvo {
         return map;
     }
 
+    public long getHitsOnShipType(List<Ship> ships, String type) {
+        Ship ship = ships.stream().filter(ship1 -> ship1.getType().equals(type)).findFirst().orElse(new Ship());
+        return this.getHitsOnShip(ship);
+    }
+
     public List<String> getHitLocations(List<Ship> ships) {
         List<String> hitLocations = new LinkedList<>();
         ships.stream()
@@ -86,10 +91,5 @@ public class Salvo {
 
     public void setSalvoLocations(List<String> salvoLocations) {
         this.salvoLocations = salvoLocations;
-    }
-
-    public long getHitsOnShipType(List<Ship> ships, String type) {
-        Ship ship = ships.stream().filter(ship1 -> ship1.getType().equals(type)).findFirst().orElse(new Ship());
-        return this.getHitsOnShip(ship);
     }
 }
