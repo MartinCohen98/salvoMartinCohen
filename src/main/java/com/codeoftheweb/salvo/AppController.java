@@ -128,8 +128,7 @@ public class AppController {
     }
 
     @RequestMapping(path = "/games/players/{gamePlayerID}/ships", method = RequestMethod.POST)
-    public ResponseEntity<Map<String, Object>> addShip(@PathVariable Long gamePlayerID, @RequestBody List<Ship> ships,
-                                                        Authentication authentication) {
+    public ResponseEntity<Map<String, Object>> addShip(@PathVariable Long gamePlayerID, @RequestBody List<Ship> ships, Authentication authentication) {
         if (this.isGuest(authentication))
             return new ResponseEntity<>(makeMap("error", "User not logged in"), HttpStatus.UNAUTHORIZED);
         GamePlayer gamePlayer = gamePlayerRepository.findById(gamePlayerID).get();

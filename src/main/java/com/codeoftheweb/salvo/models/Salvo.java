@@ -56,7 +56,7 @@ public class Salvo {
         return hitLocations;
     }
 
-    public long getHitsOnShip(Ship ship) {
+    private long getHitsOnShip(Ship ship) {
         if (ship.getId()!= 0)
             return salvoLocations.stream()
                 .filter(location -> ship.getShipLocations().contains(location))
