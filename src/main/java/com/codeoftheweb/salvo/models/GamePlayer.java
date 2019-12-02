@@ -95,6 +95,27 @@ public class GamePlayer {
                 .collect(Collectors.toList());
     }
 
+    public boolean lostAllShips() {
+        GamePlayer opponent = this.getOpponent();
+        if (opponent.getId() == 0)
+            return false;
+        if (this.countShipLocations() == this.countHitsFrom(opponent.getSalvoes()))
+            return true;
+        else
+            return false;
+    }
+
+    private long countHitsFrom(List<Salvo> salvoes) {
+        return salvoes.stream().mapToLong(salvo -> salvo.getHitLocations(this.getShips()).size()).sum();
+    }
+
+    private long countShipLocations() {
+        long locations;
+        if (ships.size() == 0)
+            return -1;
+        return ships.stream().mapToLong(ship -> ship.getShipLocations().size()).sum();
+    }
+
     public boolean salvoExistForTurn(int turn) {
         return salvoes.stream().anyMatch(salvo -> salvo.getTurn() == turn);
     }

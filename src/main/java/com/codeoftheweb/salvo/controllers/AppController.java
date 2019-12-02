@@ -6,9 +6,7 @@ import com.codeoftheweb.salvo.util.Util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -27,6 +25,9 @@ public class AppController {
     @Autowired
     private PlayerRepository playerRepository;
 
+    @Autowired
+    private ScoreRepository scoreRepository;
+
     @RequestMapping("/game_view/{gamePlayerID}")
     public ResponseEntity<Map<String, Object>> getGame(@PathVariable Long gamePlayerID, Authentication authentication) {
         GamePlayer gamePlayer = gamePlayerRepository.findById(gamePlayerID).get();
@@ -35,7 +36,7 @@ public class AppController {
         if (gamePlayer.getPlayer().getId() != Util.getPlayerFromAuthentication(authentication, playerRepository).getId())
             return new ResponseEntity<>(Util.makeMap("error", "User ID does not match link ID"), HttpStatus.UNAUTHORIZED);
         Map<String, Object> map = gamePlayer.getGame().makeGameDTO();
-        map.put("gameState", this.getState(gamePlayer, gamePlayer.getOpponent()));
+        map.put("gameState", this.getState(gamePlayer));
         map.put("ships", gamePlayer.makeShipsDTO());
         map.put("salvoes", gamePlayer.getGame().makeSalvoesDTO());
         map.put("hits", this.makeHitsDTO(gamePlayer, gamePlayer.getOpponent()));
@@ -70,15 +71,29 @@ public class AppController {
         return list;
     }
 
-    private String getState(GamePlayer gamePlayer, GamePlayer opponent) {
+    private String getState(GamePlayer gamePlayer) {
         if (gamePlayer.getShips().isEmpty())
             return "PLACESHIPS";
         if (gamePlayer.getGame().getGamePlayers().size() == 1)
             return "WAITINGFOROPP";
-        if (gamePlayer.getId() < opponent.getId())
-            return "PLAY";
-        if (gamePlayer.getId() > opponent.getId())
-            return "WAIT";
+        GamePlayer opponent = gamePlayer.getOpponent();
+        if ((gamePlayer.lostAllShips() && opponent.lostAllShips()) &&
+                (gamePlayer.getSalvoes().size() == opponent.getSalvoes().size())) {
+            Util.setScoreToTie(gamePlayer, scoreRepository);
+            return "TIE";
+        }
+        if (gamePlayer.lostAllShips() && (gamePlayer.getSalvoes().size() == opponent.getSalvoes().size())) {
+            Util.setScoreToLoss(gamePlayer, scoreRepository);
+            return "LOST";
+        }
+        if (opponent.lostAllShips() && (gamePlayer.getSalvoes().size() == opponent.getSalvoes().size())) {
+            Util.setScoreToWin(gamePlayer, scoreRepository);
+            return "WON";
+        }
+        if (((gamePlayer.getId() < opponent.getId()) && (gamePlayer.getSalvoes().size() == opponent.getSalvoes().size())) ||
+                ((gamePlayer.getId() > opponent.getId()) && (gamePlayer.getSalvoes().size() < opponent.getSalvoes().size())))
+            if (!opponent.getShips().isEmpty())
+                return "PLAY";
         return "WAIT";
     }
 
