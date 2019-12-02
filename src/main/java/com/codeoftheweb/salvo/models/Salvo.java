@@ -4,6 +4,7 @@ import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Entity
 public class Salvo {
@@ -46,14 +47,10 @@ public class Salvo {
     }
 
     public List<String> getHitLocations(List<Ship> ships) {
-        List<String> hitLocations = new LinkedList<>();
-        ships.stream()
-                .forEach(ship -> salvoLocations.stream()
-                        .forEach(location -> {
-                            if (ship.getShipLocations().contains(location))
-                                hitLocations.add(location);
-                        }));
-        return hitLocations;
+        return ships.stream()
+                .flatMap(ship -> ship.getShipLocations().stream())
+                .filter(location -> (salvoLocations.contains(location)))
+                .collect(Collectors.toList());
     }
 
     private long getHitsOnShip(Ship ship) {
