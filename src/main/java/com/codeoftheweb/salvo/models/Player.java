@@ -89,7 +89,7 @@ public class Player {
     }
 
     public List<Game> getGames() {
-        return (gamePlayers.stream().map(gamePlayer -> gamePlayer.getGame()).collect(Collectors.toList()));
+        return (gamePlayers.stream().map(GamePlayer::getGame).collect(Collectors.toList()));
     }
 
     public long getId() {

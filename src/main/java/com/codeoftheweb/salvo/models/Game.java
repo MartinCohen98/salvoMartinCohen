@@ -35,10 +35,10 @@ public class Game {
         map.put("id", this.getId());
         map.put("created", this.getCreationDate().getTime());
         map.put("gamePlayers", this.getGamePlayers()
-                .stream().map(gamePlayer -> gamePlayer.makeGamePlayerDTO())
+                .stream().map(GamePlayer::makeGamePlayerDTO)
                 .collect(Collectors.toList()));
         map.put("scores", this.getScores()
-                .stream().map(score -> score.makeScoreDTO())
+                .stream().map(Score::makeScoreDTO)
                 .collect(Collectors.toList()));
         return map;
     }
@@ -46,7 +46,7 @@ public class Game {
     public List<Object> makeSalvoesDTO() {
         return this.getGamePlayers().stream()
                 .flatMap(gamePlayer -> gamePlayer.getSalvoes()
-                        .stream().map(salvo -> salvo.makeSalvoDTO()))
+                        .stream().map(Salvo::makeSalvoDTO))
                         .collect(Collectors.toList());
     }
 
@@ -63,10 +63,10 @@ public class Game {
     }
 
     public List<GamePlayer> getGamePlayers() {
-        return (gamePlayers.stream().collect(Collectors.toList()));
+        return new ArrayList<>(gamePlayers);
     }
 
     public List<Score> getScores() {
-        return scores.stream().collect(Collectors.toList());
+        return new ArrayList<>(scores);
     }
 }

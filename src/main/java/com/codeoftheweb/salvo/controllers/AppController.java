@@ -64,7 +64,7 @@ public class AppController {
         Comparator<Map<String, Object>> byScore =
                 Comparator.comparing(map -> ((double) map.get("score")));
         List<Map<String, Object>> list = playerRepository.findAll().stream()
-                .map(player -> player.getLeaderboardDTO())
+                .map(Player::getLeaderboardDTO)
                 .collect(Collectors.toList());
         list.sort(byScore);
         Collections.reverse(list);

@@ -43,7 +43,7 @@ public class ShipController {
         if (!gamePlayer.getShips().isEmpty()) {
             return new ResponseEntity<>(Util.makeMap("error", "GamePlayer already has ships"), HttpStatus.FORBIDDEN);
         }
-        ships.stream().forEach(ship -> ship.setGamePlayer(gamePlayer));
+        ships.forEach(ship -> ship.setGamePlayer(gamePlayer));
         shipRepository.saveAll(ships);
         return new ResponseEntity<>(Util.makeMap("OK", "Ships placed"), HttpStatus.CREATED);
     }

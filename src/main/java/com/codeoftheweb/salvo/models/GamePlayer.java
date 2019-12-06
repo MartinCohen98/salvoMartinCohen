@@ -91,7 +91,7 @@ public class GamePlayer {
 
     public  List<Object> makeShipsDTO() {
         return this.getShips()
-                .stream().map(ship -> ship.makeShipDTO())
+                .stream().map(Ship::makeShipDTO)
                 .collect(Collectors.toList());
     }
 
@@ -164,15 +164,15 @@ public class GamePlayer {
 
     public List<Ship> getShips() {
         if (!Objects.isNull(ships))
-            return ships.stream().collect(Collectors.toList());
+            return new ArrayList<>(ships);
         else
-            return new LinkedList<>();
+            return new ArrayList<>();
     }
 
     public List<Salvo> getSalvoes() {
         if (!Objects.isNull(salvoes))
-            return salvoes.stream().collect(Collectors.toList());
+            return new ArrayList<>(salvoes);
         else
-            return new LinkedList<>();
+            return new ArrayList<>();
     }
 }
