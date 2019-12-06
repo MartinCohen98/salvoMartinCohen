@@ -90,8 +90,7 @@ public class AppController {
             Util.setScoreToWin(gamePlayer, scoreRepository);
             return "WON";
         }
-        if (((gamePlayer.getId() < opponent.getId()) && (gamePlayer.getSalvoes().size() == opponent.getSalvoes().size())) ||
-                ((gamePlayer.getId() > opponent.getId()) && (gamePlayer.getSalvoes().size() < opponent.getSalvoes().size())))
+        if (gamePlayer.getSalvoes().size() <= opponent.getSalvoes().size())
             if (!opponent.getShips().isEmpty())
                 return "PLAY";
         return "WAIT";
