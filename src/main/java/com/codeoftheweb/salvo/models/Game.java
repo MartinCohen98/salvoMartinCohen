@@ -15,7 +15,7 @@ public class Game {
     private long id;
 
     @OneToMany(mappedBy = "game", fetch = FetchType.EAGER)
-    private Set<GamePlayer> gamePlayers;
+    private List<GamePlayer> gamePlayers;
 
     @OneToMany(mappedBy = "game", fetch = FetchType.EAGER)
     private Set<Score> scores;
@@ -63,7 +63,7 @@ public class Game {
     }
 
     public List<GamePlayer> getGamePlayers() {
-        return new ArrayList<>(gamePlayers);
+        return gamePlayers;
     }
 
     public List<Score> getScores() {
