@@ -34,7 +34,7 @@ public class AppController {
         if (Util.isGuest(authentication))
             return new ResponseEntity<>(Util.makeMap("error", "User not logged in"), HttpStatus.UNAUTHORIZED);
         if (gamePlayer.getPlayer().getId() != Util.getPlayerFromAuthentication(authentication, playerRepository).getId())
-            return new ResponseEntity<>(Util.makeMap("error", "User ID does not match link ID"), HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(Util.makeMap("error", "User ID does not match player ID"), HttpStatus.UNAUTHORIZED);
         Map<String, Object> map = gamePlayer.getGame().makeGameDTO();
         map.put("gameState", this.getState(gamePlayer));
         map.put("ships", gamePlayer.makeShipsDTO());
